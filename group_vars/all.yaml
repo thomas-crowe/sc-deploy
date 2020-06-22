@@ -10,4 +10,5 @@ public_cidr: "150.239.16.0/24"
 
 install_tempest: true
 
-
+osp_version: 13
+ceph_version: 3

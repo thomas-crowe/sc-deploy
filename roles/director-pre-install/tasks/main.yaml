@@ -62,6 +62,8 @@
       - libguestfs-tools
       - libguestfs-xfs
       - ceph-ansible
+      - python-ovirt-engine-sdk4
+
 
 - name: Install Tempest test suite packages
   yum:
@@ -80,4 +82,22 @@
       - python2-octavia-tests-tempest
   when: install_tempest == true
 
+- name: Install overcloud images
+  yum:
+    name:
+      - rhosp-director-images
+      - rhosp-director-images-ipa
+    state: installed
+
+- name: Extract overcloud images
+  unarchive:
+    src: "{{ item }}"
+    dest: /home/stack/images
+    remote_src: yes
+  with_items:
+    - /usr/share/rhosp-director-images/overcloud-full-latest-13.0.tar
+    - /usr/share/rhosp-director-images/ironic-python-agent-latest-13.0.tar
+
+- name: Set root password for Overcloud image
+  shell: "virt-customize -a /home/stack/images/overcloud-full.qcow2 --root-password password:{{ root_password }}"
 

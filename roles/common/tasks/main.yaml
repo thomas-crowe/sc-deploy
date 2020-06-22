@@ -1,3 +1,11 @@
+- name: Wait for server to become available
+  wait_for_connection:
+    delay: 60
+    timeout: 300
+
+- name: Gather facts once host is reachable
+  setup:
+
 - name: Create file for persistent routes
   file:
     state: touch

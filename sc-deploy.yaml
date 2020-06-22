@@ -1,0 +1,24 @@
+---
+
+- hosts: localhost
+  vars_files:
+    - group_vars/all.yaml
+  tasks:
+  - name: Create Instances
+    include_role:
+      name: create_vm
+    loop: "{{ q('dict', virtual_machines)  }}"
+
+- hosts: new_vms
+  gather_facts: no
+  tasks:
+  - name: Common config on all VMs
+    include_role:
+      name: common
+
+- hosts: director
+  tasks:
+    - name: director pre-installation role
+      include_role:
+        name: director-pre-install
+
