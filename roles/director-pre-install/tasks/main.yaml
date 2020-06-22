@@ -1,0 +1,83 @@
+- name: Create the `stack` user for OSP deployment
+  user:
+    name: stack
+    state: present
+    create_home: true
+    home: /home/stack
+    generate_ssh_key: true
+
+- name: Update sudoers to allow 'stack' to sudo
+  lineinfile:
+    path: /etc/sudoers.d/stack
+    state: present
+    create: yes
+    line: 'stack ALL=(root) NOPASSWD:ALL'
+    mode: 0440
+    owner: root
+    group: root
+
+- name: Create authorized_keys file for the stack user
+  authorized_key:
+    user: stack
+    state: present
+    key: "{{ gpte_key }}"
+
+- name: Create templates and images directories
+  become: yes
+  become_user: stack
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - ~/images
+    - ~/templates
+
+- name: Update /etc/hosts
+  vars:
+    ip: "{{ public_cidr | ipaddr('net') | ipaddr('121') | ipaddr('address') }}"
+  lineinfile:
+    path: /etc/hosts
+    regexp: "^{{ ip }}"
+    line: "{{ ip }}  {{ ansible_fqdn }} {{ ansible_hostname }}"
+
+- name: Enable OpenStack repositories
+  import_role:
+    name: oasis_roles.system.rhsm
+  vars:
+    rhsm_repositories:
+      enabled:
+        - rhel-7-server-openstack-{{ osp_version }}-rpms
+        - rhel-7-server-openstack-{{ osp_version }}-tools-rpms
+        - rhel-7-server-openstack-{{ osp_version }}-optools-rpms
+        - rhel-7-server-rhceph-{{ ceph_version }}-tools-rpms
+
+- name: Install packages for director
+  yum:
+    name: "{{ packages }}"
+    state: installed
+  vars:
+    packages:
+      - python-tripleoclient
+      - libguestfs-tools
+      - libguestfs-xfs
+      - ceph-ansible
+
+- name: Install Tempest test suite packages
+  yum:
+    name: "{{ tempest_packages }}"
+    state: installed
+  vars:
+    tempest_packages:
+      - openstack-tempest
+      - python2-cinder-tests-tempest
+      - python2-heat-tests-tempest
+      - python2-keystone-tests-tempest
+      - python2-keystone-tests-tempest
+      - python2-networking-l2gw-tests-tempest
+      - python2-neutron-tests-tempest
+      - python2-novajoin-tests-tempest
+      - python2-octavia-tests-tempest
+  when: install_tempest == true
+
+

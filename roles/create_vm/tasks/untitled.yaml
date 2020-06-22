@@ -1,0 +1,33 @@
+Tasks to perform for new servers
+
+- name: Subscribe to CDN
+    oasis_roles.system.rhsm
+- name: Install common packages
+- name: Configure Time Services (NTP or Chrony)
+- name: Configure SSHD
+
+Configure director node
+
+- name: Create the `stack` user
+- name: Configure sudo for stack
+- name: Create images and templates directory
+- name: Configure `/etc/hosts`
+- name: Install tripleo client
+- name: Install libguestfs packages
+- name: Install tempest packages
+- name: Install ceph-ansible
+- name: Create the undercloud.conf for director
+- role: tripleo.operator.tripleo_undercloud_install
+- name: Configure nameserver for the control plane subnet
+- name: Install overcloud images packages
+- name: Untar overcloud images
+- name: Set root password on overcloud full
+- name: Load images into glance
+- name: Install python-ovirt-engine-sdk4
+- name: Restart ironic conductor
+
+Adding Baremetal nodes to the undercloud
+
+- name: register nodes to undercloud
+- name: introspect new nodes
+

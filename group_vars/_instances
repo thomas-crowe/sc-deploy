@@ -1,0 +1,62 @@
+virtual_machines:
+
+    director-sc1:
+      template: rhel-7.8-guest
+      memory: 256GiB
+      cpu_cores: 8
+      cpu_sockets: 2
+      cpu_threads: 2
+      fe_nic: eth0
+      fe_ip_address: 150.239.16.21
+      fe_ip_netmask: 255.255.255.0
+      fe_ip_gateway: 150.239.16.1
+      be_nic: eth1
+      be_ip_address: 10.38.83.21
+      be_ip_netmask: 255.255.255.0
+      group: director
+
+    chartreuse-ctrl01:
+      template: rhel-7.8-guest
+      memory: 128GiB
+      cpu_cores: 8
+      cpu_sockets: 2
+      cpu_threads: 2
+      fe_nic: eth0
+      fe_ip_address: 150.239.16.22
+      fe_ip_netmask: 255.255.255.0
+      fe_ip_gateway: 150.239.16.1
+      be_nic: eth1
+      be_ip_address: 10.38.83.22
+      be_ip_netmask: 255.255.255.0
+      group: chartreuse_ctrls
+
+    chartreuse-ctrl02:
+      template: rhel-7.8-guest
+      memory: 128GiB
+      cpu_cores: 8
+      cpu_sockets: 2
+      cpu_threads: 2
+      fe_nic: eth0
+      fe_ip_address: 150.239.16.23
+      fe_ip_netmask: 255.255.255.0
+      fe_ip_gateway: 150.239.16.1
+      be_nic: eth1
+      be_ip_address: 10.38.83.23
+      be_ip_netmask: 255.255.255.0
+      group: chartreuse_ctrls
+
+    chartreuse-ctrl03:
+      template: rhel-7.8-guest
+      memory: 128GiB
+      cpu_cores: 8
+      cpu_sockets: 2
+      cpu_threads: 2
+      fe_nic: eth0
+      fe_ip_address: 150.239.16.24
+      fe_ip_netmask: 255.255.255.0
+      fe_ip_gateway: 150.239.16.1
+      be_nic: eth1
+      be_ip_address: 10.38.83.24
+      be_ip_netmask: 255.255.255.0
+      group: chartreuse_ctrls
+

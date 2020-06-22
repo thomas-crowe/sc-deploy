@@ -1,0 +1,49 @@
+- name: Create VM
+  ovirt_vm:
+    auth:
+      url: "{{ ovirt_url }}"
+      username: "{{ ovirt_user }}"
+      ca_file: "{{ ovirt_ca }}"
+      password: "{{ ovirt_password }}"
+    state: running
+    name: "{{ item.key }}.{{ domain }}"
+    cluster: "{{ ovirt_cluster }}"
+    template: "{{ item.value.template }}"
+    memory: "{{ item.value.memory }}"
+    cpu_cores: "{{ item.value.cpu_cores }}"
+    cpu_sockets: "{{ item.value.cpu_sockets }}"
+    cpu_threads: "{{ item.value.cpu_threads }}"
+    type: server
+    ballooning_enabled: false
+    wait: yes
+    memory_guaranteed: "{{ item.value.memory_guaranteed }}"
+    memory_max: "{{ item.value.memory_max }}"
+    cloud_init_nics:
+      - nic_name: "{{ item.value.fe_nic }}"
+        nic_ip_address: "{{ item.value.fe_ip_address }}"
+        nic_netmask: "{{ item.value.fe_ip_netmask }}"
+        nic_gateway: "{{ item.value.fe_ip_gateway }}"
+        nic_on_boot: true
+        nic_boot_protocol: static
+      - nic_name: "{{ item.value.be_nic }}"
+        nic_ip_address: "{{ item.value.be_ip_address }}"
+        nic_netmask: "{{ item.value.be_ip_netmask }}"
+        nic_on_boot: true
+        nic_boot_protocol: static
+    cloud_init:
+      host_name: "{{ item.key }}.{{ item.value.domain | default(domain) }}"
+      authorized_ssh_keys: "{{ item.value.gpte_key | default(gpte_key) }}"
+      user_name: root
+      root_password: "{{ item.value.root_password | default(root_password) }}"
+      dns_servers: "{{ item.value.dns_servers | default(dns_servers) }}"
+      regenerate_ssh_keys: true
+
+- name: Include host in inventory
+  add_host:
+    name: "{{ item.value.fe_ip_address }}"
+    groups:
+      - new_vms
+      - "{{ item.value.group }}"
+    new_host_name: "{{ item.key }}.{{ domain }}"
+
+

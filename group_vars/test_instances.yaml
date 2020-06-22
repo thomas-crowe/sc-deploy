@@ -1,0 +1,20 @@
+virtual_machines:
+
+    TAC-test01:
+      template: rhel-7.8-guest
+      memory: 256GiB
+      memory_max: 256GiB
+      memory_guaranteed: 256GiB
+      cpu_cores: 8
+      cpu_sockets: 2
+      cpu_threads: 2
+      fe_nic: eth0
+      fe_ip_address: "{{ public_cidr | ipaddr('net') | ipaddr('121') | ipaddr('address') }}"
+      fe_ip_netmask: "{{ public_cidr | ipaddr('netmask') }}"
+      fe_ip_gateway: "{{ public_cidr | ipaddr('net') | ipaddr('1') | ipaddr('address') }}"
+      be_nic: eth1
+      be_ip_address: "{{ private_cidr | ipaddr('net') | ipaddr('121') }}"
+      be_ip_netmask: "{{ private_cidr | ipaddr('netmask') }}"
+      group: director
+
+

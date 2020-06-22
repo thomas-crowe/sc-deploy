@@ -1,0 +1,72 @@
+- name: Create file for persistent routes
+  file:
+    state: touch
+    path: /etc/sysconfig/network-scripts/route-eth1
+    owner: root
+    group: root
+    mode: '0774'
+
+- name: Add persistent route for private interface
+  blockinfile:
+    path: /etc/sysconfig/network-scripts/route-eth1
+    block: |
+      10.0.0.0/8 via {{ private_cidr | ipaddr('net') | ipaddr('1') | ipaddr('address') }} dev eth1
+      161.26.0.0/16 via {{ private_cidr | ipaddr('net') | ipaddr('1') | ipaddr('address') }} dev eth1
+      166.8.0.0/14 via {{ private_cidr | ipaddr('net') | ipaddr('1') | ipaddr('address') }} dev eth1
+
+- name: Activate reoutes for eth1
+  command: "/etc/sysconfig/network-scripts/ifup-routes eth1"
+
+- name: Disable interactive logins via SSH
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+
+- name: Subscribe to CDN
+  import_role:
+    name: oasis_roles.system.rhsm
+  vars:
+    rhsm_username: "{{ cdn_username }}"
+    rhsm_password: "{{ cdn_password }}"
+    rhsm_auto_attach: true
+    rhsm_repositories:
+      disabled:
+        - '*'
+      enabled:
+        - rhel-7-server-rpms
+        - rhel-7-server-optional-rpms
+        - rhel-7-server-extras-rpms
+
+- name: Set chrony
+  vars:
+    chrony_servers: "servertime.service.softlayer.com"
+  import_role:
+    name: oasis_roles.system.chrony
+
+- name: Enable and restart chrony
+  systemd:
+    name: chronyd
+    enabled: yes
+    state: started
+
+- name: Disable ntpd
+  systemd:
+    name: ntpd
+    enabled: no
+  when: ansible_distribution_major_version == 7
+
+- name: Install common packages
+  yum:
+    name: "{{ packages }}"
+    state: installed
+  vars:
+    packages:
+      - bash-completion
+      - chrony
+      - git
+      - tmux
+      - tree
+      - vim
+      - wget
+

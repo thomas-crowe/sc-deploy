@@ -1,0 +1,13 @@
+---
+
+domain: osp.opentlc.com
+gpte_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCvZvn+GL0wTOsAdh1ikIQoqj2Fw/RA6F14O347rgKdpkgOQpGQk1k2gM8wcla2Y1o0bPIzwlNy1oh5o9uNjZDMeDcEXWuXbu0cRBy4pVRhh8a8zAZfssnqoXHHLyPyHWpdTmgIhr0UIGYrzHrnySAnUcDp3gJuE46UEBtrlyv94cVvZf+EZUTaZ+2KjTRLoNryCn7vKoGHQBooYg1DeHLcLSRWEADUo+bP0y64+X/XTMZOAXbf8kTXocqAgfl/usbYdfLOgwU6zWuj8vxzAKuMEXS1AJSp5aeqRKlbbw40IkTmLoQIgJdb2Zt98BH/xHDe9xxhscUCfWeS37XLp75J"
+
+dns_servers: "10.0.80.11"
+
+private_cidr: "10.38.85.0/24"
+public_cidr: "150.239.16.0/24"
+
+install_tempest: true
+
+
