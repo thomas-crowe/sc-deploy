@@ -1,19 +1,24 @@
 - name: Wait for server to become available
   wait_for_connection:
-    delay: 60
+    delay: 10
     timeout: 300
 
-- name: Gather facts once host is reachable
-  setup:
+# - name: Gather facts once host is reachable
+#   setup:
+- name: Reconfigure root partition
+  block:
 
-- name: Read device information (always use unit when probing)
-  parted:
-    device: /dev/vda
-    unit: MiB
-  register: vda_info
+  - name: Read device information (always use unit when probing)
+    parted:
+      device: /dev/vda
+      unit: s
+    register: vda_info
 
-- debug:
-    msg: "{{ vda_info }}"
+  - debug:
+      msg: "{{ vda_info }}"
+
+#  - name:  Create new larger root partition
+#    shell: "parted -s /dev/vda resizepart 1 100%"
 
 - name: Create file for persistent routes
   file:

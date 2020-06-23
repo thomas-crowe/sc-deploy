@@ -52,6 +52,7 @@
     id: "{{ instance_details.vm.disk_attachments[0].id }}"
     size: "{{ item.value.root_disk_size }}"
     wait: true
+    vm_name: "{{ item.key }}.{{ domain }}"
     bootable: true
 
 - name: Include host in inventory

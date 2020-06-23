@@ -9,12 +9,12 @@
       name: create_vm
     loop: "{{ q('dict', virtual_machines)  }}"
 
-# - hosts: new_vms
-#   gather_facts: no
-#   tasks:
-#   - name: Common config on all VMs
-#     include_role:
-#       name: common
+- hosts: new_vms
+  gather_facts: no
+  tasks:
+  - name: Common config on all VMs
+    include_role:
+      name: common
 
 # - hosts: director
 #   tasks:
