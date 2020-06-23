@@ -99,5 +99,5 @@
     - /usr/share/rhosp-director-images/ironic-python-agent-latest-13.0.tar
 
 - name: Set root password for Overcloud image
-  shell: "virt-customize -a /home/stack/images/overcloud-full.qcow2 --root-password password:{{ root_password }}"
+  shell: "/usr/bin/virt-customize -a /home/stack/images/overcloud-full.qcow2 --root-password password:{{ root_password }}"
 

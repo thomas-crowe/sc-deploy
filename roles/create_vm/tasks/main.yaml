@@ -1,10 +1,13 @@
+- name: Get ovirt_auth token
+  ovirt_auth:
+    url: "{{ ovirt_url }}"
+    username: "{{ ovirt_user }}"
+    ca_file: "{{ ovirt_ca }}"
+    password: "{{ ovirt_password }}"
+
 - name: Create VM
   ovirt_vm:
-    auth:
-      url: "{{ ovirt_url }}"
-      username: "{{ ovirt_user }}"
-      ca_file: "{{ ovirt_ca }}"
-      password: "{{ ovirt_password }}"
+    auth: "{{ ovirt_auth }}"
     state: running
     name: "{{ item.key }}.{{ domain }}"
     cluster: "{{ ovirt_cluster }}"
@@ -18,6 +21,7 @@
     wait: yes
     memory_guaranteed: "{{ item.value.memory_guaranteed }}"
     memory_max: "{{ item.value.memory_max }}"
+    fetch_nested: true
     cloud_init_nics:
       - nic_name: "{{ item.value.fe_nic }}"
         nic_ip_address: "{{ item.value.fe_ip_address }}"
@@ -37,6 +41,18 @@
       root_password: "{{ item.value.root_password | default(root_password) }}"
       dns_servers: "{{ item.value.dns_servers | default(dns_servers) }}"
       regenerate_ssh_keys: true
+  register: instance_details
+
+- debug:
+    msg: "{{ instance_details.vm.disk_attachments[0].id }}"
+
+- name: Increase root disk size
+  ovirt_disk:
+    auth: "{{ ovirt_auth }}"
+    id: "{{ instance_details.vm.disk_attachments[0].id }}"
+    size: "{{ item.value.root_disk_size }}"
+    wait: true
+    bootable: true
 
 - name: Include host in inventory
   add_host:

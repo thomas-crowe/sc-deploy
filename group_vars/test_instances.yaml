@@ -8,6 +8,7 @@ virtual_machines:
       cpu_cores: 8
       cpu_sockets: 2
       cpu_threads: 2
+      root_disk_size: 50GiB
       fe_nic: eth0
       fe_ip_address: "{{ public_cidr | ipaddr('net') | ipaddr('121') | ipaddr('address') }}"
       fe_ip_netmask: "{{ public_cidr | ipaddr('netmask') }}"

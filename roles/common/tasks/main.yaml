@@ -6,6 +6,15 @@
 - name: Gather facts once host is reachable
   setup:
 
+- name: Read device information (always use unit when probing)
+  parted:
+    device: /dev/vda
+    unit: MiB
+  register: vda_info
+
+- debug:
+    msg: "{{ vda_info }}"
+
 - name: Create file for persistent routes
   file:
     state: touch
