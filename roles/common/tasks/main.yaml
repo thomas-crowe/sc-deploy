@@ -3,22 +3,23 @@
     delay: 10
     timeout: 300
 
-# - name: Gather facts once host is reachable
-#   setup:
-# - name: Reconfigure root partition
-#   block:
-#
-#   - name: Read device information (always use unit when probing)
-#     parted:
-#       device: /dev/vda
-#       unit: s
-#     register: vda_info
-#
-#  - debug:
-#      msg: "{{ vda_info }}"
+- name: Gather facts once host is reachable
+  setup:
 
-#  - name:  Create new larger root partition
-#    shell: "parted -s /dev/vda resizepart 1 100%"
+- name: Reconfigure root partition
+  block:
+
+  - name: Read device information (always use unit when probing)
+    parted:
+      device: /dev/vda
+      unit: s
+    register: vda_info
+
+  - debug:
+     msg: "{{ vda_info }}"
+
+  - name:  Create new larger root partition
+    shell: "parted -s /dev/vda resizepart 1 100%"
 
 - name: Create file for persistent routes
   file:
@@ -76,7 +77,7 @@
   systemd:
     name: ntpd
     enabled: no
-  when: ansible_distribution_major_version == 7
+  when: ansible_distribution_major_version == "7"
 
 - name: Install common packages
   yum:
