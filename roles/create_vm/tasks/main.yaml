@@ -24,14 +24,14 @@
     fetch_nested: true
     cloud_init_nics:
       - nic_name: "{{ item.value.fe_nic }}"
-        nic_ip_address: "{{ item.value.fe_ip_address }}"
-        nic_netmask: "{{ item.value.fe_ip_netmask }}"
-        nic_gateway: "{{ item.value.fe_ip_gateway }}"
+        nic_ip_address: "{{ public_cidr | ipaddr('net') | ipaddr(item.value.ip_offset) | ipaddr('address') }}"
+        nic_netmask: "{{ public_cidr | ipaddr('netmask') }}"
+        nic_gateway: "{{ public_cidr | ipaddr('net') | ipaddr('1') | ipaddr('address') }}"
         nic_on_boot: true
         nic_boot_protocol: static
       - nic_name: "{{ item.value.be_nic }}"
-        nic_ip_address: "{{ item.value.be_ip_address }}"
-        nic_netmask: "{{ item.value.be_ip_netmask }}"
+        nic_ip_address: "{{ private_cidr | ipaddr('net') | ipaddr(item.value.ip_offset) | ipaddr('address') }}"
+        nic_netmask: "{{ public_cidr | ipaddr('netmask') }}"
         nic_on_boot: true
         nic_boot_protocol: static
     cloud_init:
@@ -57,7 +57,7 @@
 
 - name: Include host in inventory
   add_host:
-    name: "{{ item.value.fe_ip_address }}"
+    name: "{{ public_cidr | ipaddr('net') | ipaddr(item.value.ip_offset) | ipaddr('address') }}"
     groups:
       - new_vms
       - "{{ item.value.group }}"

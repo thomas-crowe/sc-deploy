@@ -35,7 +35,7 @@
 
 - name: Update /etc/hosts
   vars:
-    ip: "{{ public_cidr | ipaddr('net') | ipaddr('121') | ipaddr('address') }}"
+    ip: "{{ ansible_facts.eth0.ipv4.address }}"
   lineinfile:
     path: /etc/hosts
     regexp: "^{{ ip }}"
@@ -98,6 +98,20 @@
     - /usr/share/rhosp-director-images/overcloud-full-latest-13.0.tar
     - /usr/share/rhosp-director-images/ironic-python-agent-latest-13.0.tar
 
-- name: Set root password for Overcloud image
-  shell: "/usr/bin/virt-customize -a /home/stack/images/overcloud-full.qcow2 --root-password password:{{ root_password }}"
+- name: Update overcloud image with SSH keys
+  block:
 
+  - name: Move overcloud image to temp location
+    shell: "mv /home/stack/images/overcloud-full.qcow2 /tmp/"
+
+  - name:
+    systemd:
+      name: libvirtd
+      enabled: no
+      state: started
+
+  - name: Set root password for Overcloud image
+    shell: "/usr/bin/virt-customize -a /tmp/overcloud-full.qcow2 --root-password password:{{ root_password }}"
+
+  - name: Move image file back to proper location
+    shell: "mv /tmp/overcloud-full.qcow2 /home/stack/images/"

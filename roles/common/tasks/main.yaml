@@ -6,21 +6,6 @@
 - name: Gather facts once host is reachable
   setup:
 
-- name: Reconfigure root partition
-  block:
-
-  - name: Read device information (always use unit when probing)
-    parted:
-      device: /dev/vda
-      unit: s
-    register: vda_info
-
-  - debug:
-     msg: "{{ vda_info }}"
-
-  - name:  Create new larger root partition
-    shell: "parted -s /dev/vda resizepart 1 100%"
-
 - name: Create file for persistent routes
   file:
     state: touch
@@ -53,6 +38,7 @@
     rhsm_username: "{{ cdn_username }}"
     rhsm_password: "{{ cdn_password }}"
     rhsm_auto_attach: true
+    rhsm_force_register: true
     rhsm_repositories:
       disabled:
         - '*'
@@ -72,12 +58,6 @@
     name: chronyd
     enabled: yes
     state: started
-
-- name: Disable ntpd
-  systemd:
-    name: ntpd
-    enabled: no
-  when: ansible_distribution_major_version == "7"
 
 - name: Install common packages
   yum:

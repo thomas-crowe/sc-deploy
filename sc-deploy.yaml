@@ -16,9 +16,9 @@
     include_role:
       name: common
 
-# - hosts: director
-#   tasks:
-#     - name: director pre-installation role
-#       include_role:
-#         name: director-pre-install
+- hosts: director
+  tasks:
+  - name: director pre-installation role
+    include_role:
+      name: director-pre-install
 
