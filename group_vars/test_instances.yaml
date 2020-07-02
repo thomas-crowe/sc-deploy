@@ -14,4 +14,44 @@ virtual_machines:
       be_nic: eth1
       group: director
 
+    orange-ctrl01:
+      template: rhel-7.8-guest
+      memory: 256GiB
+      memory_max: 256GiB
+      memory_guaranteed: 256GiB
+      cpu_cores: 8
+      cpu_sockets: 2
+      cpu_threads: 2
+      root_disk_size: 50GiB
+      ip_offset: 31
+      fe_nic: eth0
+      be_nic: eth1
+      group: orange-ctrls
 
+    orange-ctrl02:
+      template: rhel-7.8-guest
+      memory: 256GiB
+      memory_max: 256GiB
+      memory_guaranteed: 256GiB
+      cpu_cores: 8
+      cpu_sockets: 2
+      cpu_threads: 2
+      root_disk_size: 50GiB
+      ip_offset: 32
+      fe_nic: eth0
+      be_nic: eth1
+      group: orange-ctrls
+
+    orange-ctrl03:
+      template: rhel-7.8-guest
+      memory: 256GiB
+      memory_max: 256GiB
+      memory_guaranteed: 256GiB
+      cpu_cores: 8
+      cpu_sockets: 2
+      cpu_threads: 2
+      root_disk_size: 50GiB
+      ip_offset: 33
+      fe_nic: eth0
+      be_nic: eth1
+      group: orange-ctrls

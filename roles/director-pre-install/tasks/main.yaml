@@ -47,6 +47,7 @@
   vars:
     rhsm_repositories:
       enabled:
+        - rhel-ha-for-rhel-7-server-rpms
         - rhel-7-server-openstack-{{ osp_version }}-rpms
         - rhel-7-server-openstack-{{ osp_version }}-tools-rpms
         - rhel-7-server-openstack-{{ osp_version }}-optools-rpms
@@ -115,3 +116,20 @@
 
   - name: Move image file back to proper location
     shell: "mv /tmp/overcloud-full.qcow2 /home/stack/images/"
+
+  - name: Create the undercloud.conf from template
+    template:
+      src: undercloud.template
+      dest: /home/stack/undercloud.conf
+      owner: stack
+      group: stack
+      mode: '0644'
+
+  - name: Copy in the net-config.j2
+    copy:
+      src: net-config.j2
+      dest: /home/stack/net-config.j2
+      owner: stack
+      group: stack
+      mode: '0644'
+
