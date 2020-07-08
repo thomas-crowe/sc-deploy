@@ -31,6 +31,11 @@
     regexp: '^PasswordAuthentication'
     line: 'PasswordAuthentication no'
 
+- name: Is host already registered?
+  command: "subscription-manager version"
+  register: rh_subscribed
+  changed_when: False
+
 - name: Subscribe to CDN
   import_role:
     name: oasis_roles.system.rhsm
@@ -46,10 +51,13 @@
         - rhel-7-server-rpms
         - rhel-7-server-optional-rpms
         - rhel-7-server-extras-rpms
+  when:
+    - "'not registered' in rh_subscribed.stdout"
 
 - name: Set chrony
   vars:
-    chrony_servers: "servertime.service.softlayer.com"
+    chrony_servers:
+      - servertime.service.softlayer.com
   import_role:
     name: oasis_roles.system.chrony
 
