@@ -1,0 +1,82 @@
+- name: Ensure firewalld and ssh packages are installed openssh-server
+  package:
+    name:
+      - openssh-server
+      - firewalld
+    state: present
+  tags:
+    - setup
+    - packages
+    - ssh_config
+    - firewalld
+
+- name: Enable SSHD selinux context for port 65220
+  seport:
+    setype: ssh_port_t
+    proto: tcp
+    ports: 65220
+    state: present
+  tags:
+    - setup
+    - selinux
+    - ssh_config
+
+- name: enable services (do not restart them!)
+  service:
+    name: "{{ item }}"
+    enabled: yes
+  with_items:
+    - sshd
+    - firewalld
+  tags:
+    - setup
+    - service
+    - ssh_config
+    - firewalld
+
+- name: start firewalld (must be live to fix ports)
+  service:
+    name: "{{ item }}"
+    state: started
+  with_items:
+    - firewalld
+  tags:
+    - setup
+    - service
+    - firewalld
+
+- name: Update port in sshd_config to use Port 65220 instead of the default 22
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    state: present
+    regexp: '^#Port 22$'
+    insertafter: '^#$'
+    line: 'Port 65220'
+  notify: restart sshd
+  tags:
+    - setup
+    - ssh_config
+
+- name: Enable port 65220 for sshd
+  firewalld:
+    port: 65220/tcp
+    permanent: yes
+    immediate: yes
+    state: enabled
+  notify: reload firewalld
+  tags:
+    - setup
+    - firewalld
+    - ssh_config
+
+- name: Disable port 22 by removing ssh service from firewalld (after service reload)
+  firewalld:
+    service: ssh
+    permanent: yes
+    immediate: no
+    state: disabled
+  notify: reload firewalld
+  tags:
+    - setup
+    - firewalld
+    - ssh_config
