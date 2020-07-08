@@ -84,4 +84,8 @@
       - sysstat
 
 - name: Include ssh ports and firewall
+  include: register-idm.yaml
+
+- name: Include ssh ports and firewall
   include: ssh-ports.yaml
+

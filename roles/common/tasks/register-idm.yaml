@@ -1,0 +1,7 @@
+- name: register to IDM
+  vars:
+    register_idm_server_admin_username: "{{ idm_server_admin_username }}"
+    register_idm_server_admin_password: "{{ idm_server_admin_password }}"
+    register_idm_domain: "{{ idm_domain }}"
+  import_role:
+    name: oasis_roles.system.register_idm
