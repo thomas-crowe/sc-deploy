@@ -36,21 +36,23 @@
   register: rh_subscribed
   changed_when: False
 
+- name: Install Satellite CA
+  yum:
+    name: http://{{ rhsm_server_hostname }}/pub/katello-ca-consumer-latest.noarch.rpm
+    state: present
+
 - name: Subscribe to CDN
   import_role:
     name: oasis_roles.system.rhsm
   vars:
-    rhsm_username: "{{ cdn_username }}"
-    rhsm_password: "{{ cdn_password }}"
+    rhsm_org_id: "{{ rhsm_org_id }}"
+    rhsm_activationkey: "{{ rhsm_activationkey }}"
+    rhsm_server_hostname: "{{ rhsm_server_hostname }"
     rhsm_auto_attach: true
     rhsm_force_register: true
     rhsm_repositories:
-      disabled:
-        - '*'
       enabled:
-        - rhel-7-server-rpms
-        - rhel-7-server-optional-rpms
-        - rhel-7-server-extras-rpms
+        - '*'
   when:
     - "'not registered' in rh_subscribed.stdout"
 
@@ -82,10 +84,10 @@
       - wget
       - tcpdump
       - sysstat
+      - katello-agent
 
 - name: Include ssh ports and firewall
   include: register-idm.yaml
 
 - name: Include ssh ports and firewall
   include: ssh-ports.yaml
-
