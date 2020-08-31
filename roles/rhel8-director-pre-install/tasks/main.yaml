@@ -1,0 +1,138 @@
+- name: Create the `stack` user for OSP deployment
+  user:
+    name: stack
+    state: present
+    create_home: true
+    home: /home/stack
+    generate_ssh_key: true
+
+- name: Update sudoers to allow 'stack' to sudo
+  lineinfile:
+    path: /etc/sudoers.d/stack
+    state: present
+    create: yes
+    line: 'stack ALL=(root) NOPASSWD:ALL'
+    mode: 0440
+    owner: root
+    group: root
+
+- name: Create authorized_keys file for the stack user
+  authorized_key:
+    user: stack
+    state: present
+    key: "{{ gpte_key }}"
+
+- name: Create templates and images directories
+  become: yes
+  become_user: stack
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - ~/images
+    - ~/templates
+
+- name: Update /etc/hosts
+  vars:
+    ip: "{{ ansible_facts.eth0.ipv4.address }}"
+  lineinfile:
+    path: /etc/hosts
+    regexp: "^{{ ip }}"
+    line: "{{ ip }}  {{ ansible_fqdn }} {{ ansible_hostname }}"
+
+- name: Enable OpenStack repositories
+  import_role:
+    name: oasis_roles.system.rhsm
+  vars:
+    rhsm_repositories:
+      enabled:
+        - rhel-8-for-x86_64-baseos-eus-rpms
+        - rhel-8-for-x86_64-appstream-eus-rpms
+        - rhel-8-for-x86_64-highavailability-eus-rpms
+        - ansible-2.9-for-rhel-8-x86_64-rpms
+        - satellite-tools-6.5-for-rhel-8-x86_64-rpms
+        - openstack-{{ osp_version}}-for-rhel-8-x86_64-rpms
+        - fast-datapath-for-rhel-8-x86_64-rpms
+        - rhceph-{{ ceph_version }}-tools-for-rhel-8-x86_64-rpms
+
+- name: Install packages for director
+  yum:
+    name: "{{ packages }}"
+    state: installed
+  vars:
+    packages:
+      - python-tripleoclient
+      - libguestfs-tools
+      - libguestfs-xfs
+      - ceph-ansible
+      - python-ovirt-engine-sdk4
+
+
+- name: Install Tempest test suite packages
+  yum:
+    name: "{{ tempest_packages }}"
+    state: installed
+  vars:
+    tempest_packages:
+      - openstack-tempest
+      - python2-cinder-tests-tempest
+      - python2-heat-tests-tempest
+      - python2-keystone-tests-tempest
+      - python2-keystone-tests-tempest
+      - python2-networking-l2gw-tests-tempest
+      - python2-neutron-tests-tempest
+      - python2-novajoin-tests-tempest
+      - python2-octavia-tests-tempest
+  when: install_tempest == true
+
+- name: Install overcloud images
+  yum:
+    name:
+      - rhosp-director-images
+      - rhosp-director-images-ipa
+    state: installed
+
+- name: Extract overcloud images
+  unarchive:
+    src: "{{ item }}"
+    dest: /home/stack/images
+    remote_src: yes
+  with_items:
+    - /usr/share/rhosp-director-images/overcloud-full-latest-13.0.tar
+    - /usr/share/rhosp-director-images/ironic-python-agent-latest-13.0.tar
+
+- name: Update overcloud image with SSH keys
+  block:
+
+  - name: Move overcloud image to temp location
+    shell: "mv /home/stack/images/overcloud-full.qcow2 /tmp/"
+
+  - name:
+    systemd:
+      name: libvirtd
+      enabled: no
+      state: started
+
+  - name: Set root password for Overcloud image
+    shell: "/usr/bin/virt-customize -a /tmp/overcloud-full.qcow2 --root-password password:{{ root_password }}"
+
+  - name: Move image file back to proper location
+    shell: "mv /tmp/overcloud-full.qcow2 /home/stack/images/"
+
+  - name: Create the undercloud.conf from template
+    template:
+      src: undercloud.template
+      dest: /home/stack/undercloud.conf
+      owner: stack
+      group: stack
+      mode: '0644'
+
+  - name: Copy in the net-config.j2
+    copy:
+      src: net-config.j2
+      dest: /home/stack/net-config.j2
+      owner: stack
+      group: stack
+      mode: '0644'
+
