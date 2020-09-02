@@ -1,7 +1,7 @@
-- name: Wait for server to become available
-  wait_for_connection:
-    delay: 10
-    timeout: 300
+- name: Reboot the server
+  reboot:
+    connect_timeout: 300
+    reboot_timeout: 300
 
 - name: Gather facts once host is reachable
   setup:
