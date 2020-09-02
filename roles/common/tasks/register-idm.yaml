@@ -3,5 +3,15 @@
     register_idm_server_admin_username: "{{ idm_server_admin_username }}"
     register_idm_server_admin_password: "{{ idm_server_admin_password }}"
     register_idm_domain: "{{ idm_domain }}"
+    register_idm_packages:
+      - ipa-client
+      - ipa-admintools
+      - sssd-ipa
+      - sssd-ldap
+      - ipa-python
+      - python3-libipa_hbac
+      - python3-iniparse
+      - ca-certificates
+
   import_role:
     name: oasis_roles.system.register_idm

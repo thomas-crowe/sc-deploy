@@ -21,5 +21,5 @@
   tasks:
   - name: director pre-installation role
     include_role:
-      name: director-pre-install
+      name: rhel8-director-pre-install
 

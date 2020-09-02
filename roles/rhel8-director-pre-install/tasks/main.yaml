@@ -41,21 +41,6 @@
     regexp: "^{{ ip }}"
     line: "{{ ip }}  {{ ansible_fqdn }} {{ ansible_hostname }}"
 
-- name: Enable OpenStack repositories
-  import_role:
-    name: oasis_roles.system.rhsm
-  vars:
-    rhsm_repositories:
-      enabled:
-        - rhel-8-for-x86_64-baseos-eus-rpms
-        - rhel-8-for-x86_64-appstream-eus-rpms
-        - rhel-8-for-x86_64-highavailability-eus-rpms
-        - ansible-2.9-for-rhel-8-x86_64-rpms
-        - satellite-tools-6.5-for-rhel-8-x86_64-rpms
-        - openstack-{{ osp_version}}-for-rhel-8-x86_64-rpms
-        - fast-datapath-for-rhel-8-x86_64-rpms
-        - rhceph-{{ ceph_version }}-tools-for-rhel-8-x86_64-rpms
-
 - name: Install packages for director
   yum:
     name: "{{ packages }}"
