@@ -47,11 +47,11 @@
     state: installed
   vars:
     packages:
-      - python-tripleoclient
+      - python3-tripleoclient
       - libguestfs-tools
       - libguestfs-xfs
       - ceph-ansible
-      - python-ovirt-engine-sdk4
+      - python3-ovirt-engine-sdk4
 
 
 - name: Install Tempest test suite packages
@@ -61,14 +61,14 @@
   vars:
     tempest_packages:
       - openstack-tempest
-      - python2-cinder-tests-tempest
-      - python2-heat-tests-tempest
-      - python2-keystone-tests-tempest
-      - python2-keystone-tests-tempest
-      - python2-networking-l2gw-tests-tempest
-      - python2-neutron-tests-tempest
-      - python2-novajoin-tests-tempest
-      - python2-octavia-tests-tempest
+      - python3-cinder-tests-tempest
+      - python3-heat-tests-tempest
+      - python3-keystone-tests-tempest
+      - python3-keystone-tests-tempest
+      - python3-networking-l2gw-tests-tempest
+      - python3-neutron-tests-tempest
+      - python3-novajoin-tests-tempest
+      - python3-octavia-tests-tempest
   when: install_tempest == true
 
 - name: Install overcloud images
@@ -84,8 +84,8 @@
     dest: /home/stack/images
     remote_src: yes
   with_items:
-    - /usr/share/rhosp-director-images/overcloud-full-latest-13.0.tar
-    - /usr/share/rhosp-director-images/ironic-python-agent-latest-13.0.tar
+    - /usr/share/rhosp-director-images/overcloud-full-latest-{{ osp_version }}.tar
+    - /usr/share/rhosp-director-images/ironic-python-agent-latest-{{ osp_version }}.tar
 
 - name: Update overcloud image with SSH keys
   block:
