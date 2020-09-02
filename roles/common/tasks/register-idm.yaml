@@ -1,9 +1,7 @@
-- name: register to IDM
-  vars:
-    register_idm_server_admin_username: "{{ idm_server_admin_username }}"
-    register_idm_server_admin_password: "{{ idm_server_admin_password }}"
-    register_idm_domain: "{{ idm_domain }}"
-    register_idm_packages:
+- name: Set fact register_idm_packages RHEL 8
+  when: ansible_distribution_major_version == '8'
+  set_fact:
+    idm_packages:
       - ipa-client
       - ipa-admintools
       - sssd-ipa
@@ -12,6 +10,26 @@
       - python3-libipa_hbac
       - python3-iniparse
       - ca-certificates
+
+- name: Set fact register_idm_packages RHEL 8
+  when: ansible_distribution_major_version < '8'
+  set_fact:
+    idm_packages:
+      - ipa-client
+      - ipa-admintools
+      - sssd-ipa
+      - sssd-ldap
+      - ipa-python
+      - python-libipa_hbac
+      - python-iniparse
+      - ca-certificates
+
+- name: register to IDM
+  vars:
+    register_idm_server_admin_username: "{{ idm_server_admin_username }}"
+    register_idm_server_admin_password: "{{ idm_server_admin_password }}"
+    register_idm_domain: "{{ idm_domain }}"
+    register_idm_packages: "{{ idm_packages }}"
 
   import_role:
     name: oasis_roles.system.register_idm
