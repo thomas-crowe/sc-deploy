@@ -22,7 +22,7 @@
     state: present
     key: "{{ gpte_key }}"
 
-- name: Create templates and images directories
+- name: Create directories
   become: yes
   become_user: stack
   file:
@@ -32,6 +32,7 @@
   with_items:
     - ~/images
     - ~/templates
+    - ~/builddir/tripleo-config-generated-env-files
 
 - name: Update /etc/hosts
   vars:
@@ -105,6 +106,24 @@
   - name: Move image file back to proper location
     shell: "mv /tmp/overcloud-full.qcow2 /home/stack/images/"
 
+- name: Prepare Container Images
+  sudo: true
+  sudo_user: stack
+  shell: |
+    openstack tripleo container image prepare default --local-push-destination --output-env-file /home/stack/containers-prepare-parameter.yaml
+
+- name: Populate service creds in to containers-prepare-parameter file
+  blockinfile:
+    path: /home/stack/containers-prepare-parameter.yaml
+    insertafter: EOF
+    state: present
+    block: |
+      "
+        ContainerImageRegistryCredentials:
+          {{  registry }}
+            {{ registry_user }}:'{{ registry_token }}'
+            "
+
 - name: Create the undercloud.conf from template
   template:
     src: undercloud.template
@@ -112,12 +131,3 @@
     owner: stack
     group: stack
     mode: '0644'
-
-- name: Copy in the net-config.j2
-  copy:
-    src: net-config.j2
-    dest: /home/stack/net-config.j2
-    owner: stack
-    group: stack
-    mode: '0644'
-
