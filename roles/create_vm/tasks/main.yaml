@@ -46,6 +46,14 @@
 - debug:
     msg: "{{ instance_details.vm.disk_attachments[0].id }}"
 
+- name: Stopping instance before resize the disk
+  ovirt_vm:
+    auth: "{{ ovirt_auth }}"
+    state: stopped
+    name: "{{ item.key }}.{{ domain }}"
+  register: r_stopped
+  when: instance_details.changed
+
 - name: Increase root disk size
   ovirt_disk:
     auth: "{{ ovirt_auth }}"
@@ -54,6 +62,14 @@
     wait: true
     vm_name: "{{ item.key }}.{{ domain }}"
     bootable: true
+  when: instance_details.changed
+
+- name: Stopping instance before resize the disk
+  ovirt_vm:
+    auth: "{{ ovirt_auth }}"
+    state: running
+    name: "{{ item.key }}.{{ domain }}"
+  when: r_stopped.changed
 
 - name: Include host in inventory
   add_host:
