@@ -1,3 +1,9 @@
+- name: Is host already registered?
+  command: ipa-client-install
+  register: idm_registred
+  no_log: true
+  failed_when: false
+
 - name: Set fact register_idm_packages RHEL 8
   when: ansible_distribution_major_version == '8'
   set_fact:
@@ -33,3 +39,6 @@
 
   import_role:
     name: oasis_roles.system.register_idm
+  when:
+    - idm_registred.rc != 3
+
