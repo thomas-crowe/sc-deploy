@@ -30,7 +30,7 @@
   changed_when: False
 
 - name: Install Satellite CA
-  dnf:
+  package:
     name: http://{{ rhsm_server_hostname }}/pub/katello-ca-consumer-latest.noarch.rpm
     state: present
 
@@ -62,7 +62,7 @@
     state: started
 
 - name: Install common packages
-  dnf:
+  package:
     name: "{{ packages }}"
     state: installed
   vars:
