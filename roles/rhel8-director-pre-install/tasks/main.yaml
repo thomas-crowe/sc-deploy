@@ -107,9 +107,8 @@
     shell: "mv /tmp/overcloud-full.qcow2 /home/stack/images/"
 
 - name: Prepare Container Images
-  sudo: true
-  sudo_user: stack
-  shell: |
+  become_user: stack
+  command: |
     openstack tripleo container image prepare default --local-push-destination --output-env-file /home/stack/containers-prepare-parameter.yaml
 
 - name: Populate service creds in to containers-prepare-parameter file
@@ -118,11 +117,9 @@
     insertafter: EOF
     state: present
     block: |
-      "
         ContainerImageRegistryCredentials:
           {{  registry }}
             {{ registry_user }}:'{{ registry_token }}'
-            "
 
 - name: Create the undercloud.conf from template
   template:
@@ -131,3 +128,4 @@
     owner: stack
     group: stack
     mode: '0644'
+
