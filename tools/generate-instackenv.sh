@@ -20,7 +20,7 @@ count=0
 # Print instackenv.json preamble
 
 echo "{"
-echo "  nodes:["
+echo "  \"nodes\":["
 
 
 for i in ${NODES[@]}
@@ -32,15 +32,15 @@ do
   PM_PASSWORD=$(echo ${JSON} | jq -r '.remoteManagementAccounts[0].password')
   PM_USER=$(echo ${JSON} | jq -r '.remoteManagementAccounts[0].username')
   echo "    {"
-  echo "      name: $HOSTNAME,"
-  echo "      mac: ["
-  echo "        $MAC"
+  echo "      \"name\": \"$HOSTNAME\","
+  echo "      \"mac\": ["
+  echo "        \"$MAC\""
   echo "      ],"
-  echo "      pm_user: $PM_USER,"
-  echo "      pm_password: $PM_PASSWORD,"
-  echo "      pm_addr: $PM_ADDR,"
-  echo "      pm_type: ipmi,"
-  echo "      arch: x86_64,"
+  echo "      \"pm_user\": \"$PM_USER\","
+  echo "      \"pm_password\": \"$PM_PASSWORD\","
+  echo "      \"pm_addr\": \"$PM_ADDR\","
+  echo "      \"pm_type\": \"ipmi\","
+  echo "      \"arch\": \"x86_64\""
   if [ $count = $stop ]
     then
       echo "    }"
