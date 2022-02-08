@@ -1,7 +1,7 @@
-- name: Reboot the server
-  reboot:
-    connect_timeout: 300
-    reboot_timeout: 300
+# - name: Reboot the server
+#   reboot:
+#     connect_timeout: 300
+#     reboot_timeout: 300
 
 - name: Gather facts once host is reachable
   setup:
@@ -24,29 +24,35 @@
     regexp: '^PasswordAuthentication'
     line: 'PasswordAuthentication no'
 
-- name: Is host already registered?
-  command: "subscription-manager version"
-  register: rh_subscribed
-  changed_when: False
+- name: Check subscription-manager status
+  shell: "/sbin/subscription-manager status"
+  register: sm_status
 
-- name: Install Satellite CA
-  package:
-    name: http://{{ rhsm_server_hostname }}/pub/katello-ca-consumer-latest.noarch.rpm
-    state: present
+- name: Register with Satellite
+  block:
 
-- name: Subscribe to CDN
-  import_role:
-    name: oasis_roles.system.rhsm
-  vars:
-    rhsm_org_id: "{{ rhsm_org_id }}"
-    rhsm_activationkey: "{{ rhsm_activationkey }}"
-    rhsm_server_hostname: "{{ rhsm_server_hostname }"
-    rhsm_force_register: true
-    rhsm_repositories:
-      enabled:
-        - '*'
-  when:
-    - "'not registered' in rh_subscribed.stdout"
+  - name: Install Satellite CA
+    package:
+     name: http://{{ rhsm_server_hostname }}/pub/katello-ca-consumer-latest.noarch.rpm
+     state: present
+    when:
+     - "'not registered' in rh_subscribed.stdout"
+
+  - name: Subscribe to CDN
+    import_role:
+     name: oasis_roles.system.rhsm
+    vars:
+     rhsm_org_id: "{{ rhsm_org_id }}"
+     rhsm_activationkey: "{{ rhsm_activationkey }}"
+     rhsm_server_hostname: "{{ rhsm_server_hostname }"
+     rhsm_force_register: true
+     rhsm_repositories:
+       enabled:
+         - '*'
+
+  become: true
+  ignore_errors: yes
+  when: sm_status.rc != 0
 
 - name: Set chrony
   vars:

@@ -75,7 +75,7 @@
   dnf:
     name:
       - rhosp-director-images
-      - rhosp-director-images-ipa
+      - rhosp-director-images-ipa-x86_64
     state: installed
 
 - name: Extract overcloud images
@@ -84,8 +84,8 @@
     dest: /home/stack/images
     remote_src: yes
   with_items:
-    - /usr/share/rhosp-director-images/overcloud-full-latest-13.0.tar
-    - /usr/share/rhosp-director-images/ironic-python-agent-latest-13.0.tar
+    -  /usr/share/rhosp-director-images/overcloud- full-latest-16.2.tar
+    -  /usr/share/rhosp-director-images/ironic-python-agent-latest-16.2.tar
 
 - name: Update overcloud image with SSH keys
   block:

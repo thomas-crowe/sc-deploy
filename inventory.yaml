@@ -1,0 +1,6 @@
+Director:
+  hosts:
+    olive: {ansible_host: 169.61.217.18}
+  vars:
+    ansible_ssh_user: root
+    ansible_port: 65220

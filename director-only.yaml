@@ -1,0 +1,15 @@
+---
+
+- hosts: Director
+  gather_facts: no
+  tasks:
+  - name: Common config on all VMs
+    include_role:
+      name: common
+
+- hosts: Director
+  tasks:
+  - name: director pre-installation role
+    include_role:
+      name: rhel8-director-pre-install
+
