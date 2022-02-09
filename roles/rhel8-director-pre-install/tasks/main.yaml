@@ -76,7 +76,7 @@
   yum:
     name:
       - rhosp-director-images
-      - rhosp-director-images-ipa
+      - rhosp-director-images-ipa-x86_64
     state: installed
 
 - name: Extract overcloud images
